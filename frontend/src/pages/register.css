@@ -1,0 +1,151 @@
+.register-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+}
+
+.register-card {
+  display: flex;
+  max-width: 950px;
+  width: 100%;
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
+}
+
+/* Left Panel - Info */
+.register-info {
+  flex: 1;
+  background: #1e293b;
+  padding: 60px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register-info h2 { font-size: 2.5rem; margin-bottom: 1.5rem; font-weight: 800; }
+.register-info p { font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem; }
+
+.info-list { list-style: none; padding: 0; }
+.info-list li {
+  margin-bottom: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Right Panel - Form */
+.register-form {
+  flex: 1.2;
+  padding: 60px;
+  background: white;
+}
+
+.register-header { margin-bottom: 30px; }
+.register-title { font-size: 2rem; font-weight: 800; color: #334155; }
+.register-header p { color: #94a3b8; }
+
+/* Input Styling (Floating Labels) */
+.reg-input-group {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+.reg-input, .reg-select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.reg-label {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  color: #94a3b8;
+  transition: 0.3s;
+  pointer-events: none;
+  background: white;
+  padding: 0 4px;
+}
+
+/* Floating Animation */
+.reg-input:focus, .reg-input:not(:placeholder-shown) {
+  border-color: #6366f1;
+}
+
+.reg-input:focus + .reg-label,
+.reg-input:not(:placeholder-shown) + .reg-label {
+  top: -10px;
+  left: 12px;
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 700;
+}
+
+/* Select Box Special Styling */
+.reg-select {
+  appearance: none;
+  cursor: pointer;
+  background: white;
+}
+
+.reg-label-select {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 700;
+  background: white;
+  padding: 0 4px;
+}
+
+/* Button */
+.reg-button {
+  width: 100%;
+  padding: 16px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+}
+
+.reg-button:hover {
+  background: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.5);
+}
+
+.reg-footer {
+  text-align: center;
+  margin-top: 25px;
+  color: #64748b;
+}
+
+.reg-footer span {
+  color: #6366f1;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .register-card { flex-direction: column; }
+  .register-info { padding: 40px; }
+  .register-form { padding: 40px; }
+}

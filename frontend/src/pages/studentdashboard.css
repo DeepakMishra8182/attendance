@@ -1,0 +1,159 @@
+.student-dashboard-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background: #f8fafc;
+}
+
+.student-header { margin-bottom: 2.5rem; }
+.student-title { font-size: 2rem; font-weight: 800; color: #1e293b; }
+.student-title span { color: #6366f1; }
+.student-subtitle { color: #64748b; margin-top: 5px; }
+
+/* Overall Attendance Circular Card */
+.report-overall-card {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 3rem;
+  box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.3);
+}
+
+.overall-info h3 { font-size: 1.5rem; opacity: 0.9; margin-bottom: 10px; }
+.session-count { font-size: 1.1rem; opacity: 0.8; }
+
+.circular-chart {
+  width: 120px;
+  height: 120px;
+}
+
+.circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 2.8; }
+.circle {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s ease;
+}
+.percentage {
+  fill: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+/* Subject Cards Grid */
+.section-title { margin-bottom: 1.5rem; font-size: 1.3rem; color: #1e293b; }
+.report-subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.subject-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.sub-top { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+.subject-name { font-weight: 700; color: #334155; }
+.sub-perc { color: #6366f1; font-weight: 800; }
+
+.progress-bar-bg {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
+}
+
+.sub-sessions { font-size: 0.85rem; color: #94a3b8; }
+
+/* Action Area */
+.action-area { text-align: center; margin: 2rem 0; }
+.scan-trigger-btn {
+  background: #1e293b;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+  transition: 0.3s;
+}
+
+.scan-trigger-btn:hover { background: #000; transform: scale(1.05); }
+
+/* Scanner Modal Overlay */
+.scanner-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.scanner-modal {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 30px;
+  padding: 2rem;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px; right: 20px;
+  background: none; border: none; font-size: 1.5rem; cursor: pointer;
+}
+
+/* Attendance Confirmation */
+.attendance-confirm-card {
+  background: #ecfdf5;
+  border: 2px solid #10b981;
+  padding: 1.5rem;
+  border-radius: 20px;
+  text-align: center;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.mark-btn {
+  margin-top: 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .report-overall-card { flex-direction: column; text-align: center; gap: 20px; }
+}
