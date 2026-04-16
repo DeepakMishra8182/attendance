@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import './navbar.css';
+import "./navbar.css";
 
 const Navbar = () => {
   const { user, setUser } = useAuth();
@@ -29,16 +29,49 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-links">
-          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/" className="nav-link">
+            Home
+          </Link>
 
           {!user ? (
             <div className="auth-links">
-              <Link to="/login" className="nav-link">Login</Link>
-              <Link to="/register" className="nav-link register-btn">Register</Link>
+              <Link to="/login" className="nav-link">
+                Login
+              </Link>
+              <Link to="/register" className="nav-link register-btn">
+                Register
+              </Link>
             </div>
           ) : (
             <div className="user-section">
               <span className="navbar-user">Hi, {user.name}</span>
+
+              {/* 🔥 DASHBOARD LINK */}
+              <Link to="/dashboard" className="nav-link">
+                Dashboard
+              </Link>
+
+              {/* 🔥 ADMIN ONLY */}
+              {user.role === "admin" && (
+                <Link to="/admin/attendance" className="nav-link">
+                  Attendance
+                </Link>
+              )}
+
+              {/* 🔥 TEACHER ONLY */}
+              {user.role === "teacher" && (
+                <Link to="/teacher" className="nav-link">
+                  Teacher Panel
+                </Link>
+              )}
+
+              {/* 🔥 STUDENT ONLY */}
+              {user.role === "student" && (
+                <Link to="/student" className="nav-link">
+                  Student Panel
+                </Link>
+              )}
+
               <button className="logout-btn" onClick={logoutHandler}>
                 Logout
               </button>

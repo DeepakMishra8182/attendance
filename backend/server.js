@@ -8,6 +8,7 @@ import sessionRoutes from "./routes/sessionRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import { Server } from "socket.io";
 
 
 dotenv.config();
@@ -36,6 +37,15 @@ app.use("/api/report", reportRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () =>
+const server=app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+});
+
+export { io };

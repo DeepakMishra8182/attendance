@@ -1,111 +1,144 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import './admindashboard.css'
+import "./admindashboard.css";
 
 const AdminDashboard = () => {
-  const [className, setClassName] = useState("");
   const [classes, setClasses] = useState([]);
-  const [teacherId, setTeacherId] = useState("");
-  const [studentId, setStudentId] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
+  const [users, setUsers] = useState([]);
 
-  const fetchClasses = async () => {
-    const res = await axios.get("http://localhost:3000/api/admin/classes", {
-      withCredentials: true,
-    });
-    setClasses(res.data);
+  const [className, setClassName] = useState("");
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [view, setView] = useState("classes");
+
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [subjectName, setSubjectName] = useState("");
+
+  // 🔥 fetch data
+  const fetchAll = async () => {
+    const classRes = await axios.get("http://localhost:3000/api/admin/classes", { withCredentials: true });
+    const userRes = await axios.get("http://localhost:3000/api/admin/users", { withCredentials: true });
+
+    setClasses(classRes.data);
+    setUsers(userRes.data);
+
+    if (selectedClass) {
+      const updated = classRes.data.find(c => c._id === selectedClass._id);
+      setSelectedClass(updated);
+    }
   };
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
+  useEffect(() => { fetchAll(); }, []);
 
+  // ✅ create class
   const createClass = async () => {
-    await axios.post(
-      "http://localhost:3000/api/admin/class",
+    await axios.post("http://localhost:3000/api/admin/class",
       { className },
       { withCredentials: true }
     );
     setClassName("");
-    fetchClasses();
+    fetchAll();
   };
 
-  const assignTeacher = async () => {
-    await axios.post(
-      "http://localhost:3000/api/admin/assign-teacher",
-      { classId: selectedClass, teacherId },
-      { withCredentials: true }
-    );
-    fetchClasses();
-  };
-
+  // ✅ add student
   const addStudent = async () => {
-    await axios.post(
-      "http://localhost:3000/api/admin/add-student",
-      { classId: selectedClass, studentId },
+    await axios.post("http://localhost:3000/api/admin/add-student",
+      { classId: selectedClass._id, studentId: selectedStudent },
       { withCredentials: true }
     );
-    fetchClasses();
+    setSelectedStudent("");
+    fetchAll();
   };
-return (
-    <div className="admin-container">
-      <header className="admin-header">
-        <h2 className="admin-title">Admin <span>Dashboard</span></h2>
-        <p className="admin-subtitle">Manage your classes, teachers, and students efficiently.</p>
-      </header>
 
-      <div className="admin-grid">
-        {/* Section 1: Create Class */}
-        <div className="admin-card action-card">
-          <h3>Create New Class</h3>
-          <div className="input-group">
-            <input
-              className="admin-input"
-              placeholder="e.g. Computer Science 101"
-              value={className}
-              onChange={(e) => setClassName(e.target.value)}
-            />
-            <button className="admin-button primary" onClick={createClass}>
-              Create Class
-            </button>
-          </div>
-        </div>
+  // ✅ add subject + teacher
+  const addSubject = async () => {
+    await axios.post("http://localhost:3000/api/admin/add-subject",
+      {
+        classId: selectedClass._id,
+        subjectName,
+        teacherId: selectedTeacher,
+      },
+      { withCredentials: true }
+    );
+    setSubjectName("");
+    setSelectedTeacher("");
+    fetchAll();
+  };
 
-        {/* Section 2: Management */}
-        <div className="admin-card action-card">
-          <h3>Class Management</h3>
-          <div className="input-row">
-            <input className="admin-input" placeholder="Class ID" onChange={(e)=>setSelectedClass(e.target.value)} />
-            <input className="admin-input" placeholder="Teacher/Student ID" onChange={(e)=>setTeacherId(e.target.value) || setStudentId(e.target.value)} />
-          </div>
-          <div className="button-row">
-            <button className="admin-button secondary" onClick={assignTeacher}>Assign Teacher</button>
-            <button className="admin-button success" onClick={addStudent}>Add Student</button>
-          </div>
-        </div>
-      </div>
+  return (
+    <div className="admin-wrapper">
+      <h2>Admin Panel</h2>
 
-      <h3 className="section-heading">Active Classes</h3>
-      <div className="admin-class-list">
-        {classes.map((cls) => (
-          <div className="admin-class-card" key={cls._id}>
-            <div className="class-info">
-              <h3>{cls.className}</h3>
-              <span className="class-id">ID: {cls._id.slice(-6)}</span>
-            </div>
-            <div className="class-stats">
-              <div className="stat">
-                <span className="label">Teacher</span>
-                <span className="value">{cls.teacherId?.name || "Not Assigned"}</span>
+      {/* CLASS LIST */}
+      {view === "classes" && (
+        <>
+          <input
+            value={className}
+            onChange={(e) => setClassName(e.target.value)}
+            placeholder="Class Name"
+          />
+          <button onClick={createClass}>Create Class</button>
+
+          <div className="class-grid">
+            {classes.map((c) => (
+              <div key={c._id} className="class-box"
+                onClick={() => { setSelectedClass(c); setView("class"); }}>
+                <h3>{c.className}</h3>
+                <p>{c.students.length} Students</p>
               </div>
-              <div className="stat">
-                <span className="label">Students</span>
-                <span className="value">{cls.students.length} Enrolled</span>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      {/* CLASS DETAIL */}
+      {view === "class" && selectedClass && (
+        <div>
+          <button onClick={() => setView("classes")}>⬅ Back</button>
+
+          <h3>{selectedClass.className}</h3>
+
+          {/* 🔵 ADD STUDENT */}
+          <h4>Add Student</h4>
+          <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)}>
+            <option>Select Student</option>
+            {users.filter(u => u.role === "student").map(u => (
+              <option key={u._id} value={u._id}>{u.name}</option>
+            ))}
+          </select>
+          <button onClick={addStudent}>Add Student</button>
+
+          {/* 🟣 ADD SUBJECT */}
+          <h4>Add Subject</h4>
+          <input
+            value={subjectName}
+            onChange={(e) => setSubjectName(e.target.value)}
+            placeholder="Subject Name"
+          />
+
+          <select value={selectedTeacher} onChange={(e) => setSelectedTeacher(e.target.value)}>
+            <option>Select Teacher</option>
+            {users.filter(u => u.role === "teacher").map(u => (
+              <option key={u._id} value={u._id}>{u.name}</option>
+            ))}
+          </select>
+
+          <button onClick={addSubject}>Add Subject</button>
+
+          {/* LIST */}
+          <h4>Students</h4>
+          {selectedClass.students.map(s => (
+            <div key={s._id}>{s.name}</div>
+          ))}
+
+          <h4>Subjects</h4>
+          {selectedClass.subjects.map((sub, i) => (
+            <div key={i}>
+              {sub.name} - {sub.teacherId?.name || "No Teacher"}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

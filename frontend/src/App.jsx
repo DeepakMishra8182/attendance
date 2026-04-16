@@ -9,6 +9,7 @@ import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
+import AdminAttendance from "./pages/AdminAttendance";
 
 // 🔥 ROLE BASED DASHBOARD
 const Dashboard = () => {
@@ -69,6 +70,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <StudentDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/attendance"
+                element={
+                  <ProtectedRoute>
+                    <AdminAttendance />
                   </ProtectedRoute>
                 }
               />

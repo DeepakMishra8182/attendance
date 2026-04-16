@@ -1,5 +1,6 @@
 import Session from "../models/Session.js";
 import Attendance from "../models/Attendance.js";
+import { io } from "../server.js";
 
 // 📍 Distance function (Haversine)
 const getDistance = (lat1, lon1, lat2, lon2) => {
@@ -25,10 +26,15 @@ export const markAttendance = async (req, res) => {
   try {
     const { sessionId, token, latitude, longitude } = req.body;
 
+    // 🔍 find session
     const session = await Session.findOne({ sessionId });
 
-    // ❌ invalid session
-    if (!session || session.token !== token) {
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    // 🔐 token validation
+    if (session.token !== token) {
       return res.status(400).json({ message: "Invalid QR" });
     }
 
@@ -37,14 +43,30 @@ export const markAttendance = async (req, res) => {
       return res.status(400).json({ message: "QR Expired" });
     }
 
-    // ⏳ late entry check (5 min allowed)
-    const allowedTime = new Date(session.startTime).getTime() + 5 * 60 * 1000;
+    // ⏳ late entry check (5 min)
+    const allowedTime =
+      new Date(session.startTime).getTime() + 5 * 60 * 1000;
+
     if (Date.now() > allowedTime) {
       return res.status(400).json({ message: "Too late" });
     }
 
-    // 📍 location check (100m radius)
-    if (session.latitude && session.longitude) {
+    // 🔥 CLASS VALIDATION (VERY IMPORTANT)
+    if (
+      req.user.classId?.toString() !== session.classId.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "You are not in this class" });
+    }
+
+    // 📍 location check (optional safety)
+    if (
+      session.latitude &&
+      session.longitude &&
+      latitude &&
+      longitude
+    ) {
       const distance = getDistance(
         latitude,
         longitude,
@@ -53,11 +75,13 @@ export const markAttendance = async (req, res) => {
       );
 
       if (distance > 0.1) {
-        return res.status(400).json({ message: "Outside classroom" });
+        return res
+          .status(400)
+          .json({ message: "Outside classroom" });
       }
     }
 
-    // 🔁 duplicate check handled by index (but safe check)
+    // 🔁 duplicate check
     const already = await Attendance.findOne({
       studentId: req.user._id,
       sessionId,
@@ -75,15 +99,23 @@ export const markAttendance = async (req, res) => {
       subject: session.subject,
     });
 
+    // 🔥 REAL-TIME EVENT
+    io.emit("attendanceMarked", {
+      studentId: req.user._id,
+      sessionId,
+      subject: session.subject,
+    });
+
     res.status(201).json({
       message: "Attendance marked successfully",
       attendance,
     });
   } catch (error) {
-    // unique index error fallback
     if (error.code === 11000) {
       return res.status(400).json({ message: "Already marked" });
     }
+
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };

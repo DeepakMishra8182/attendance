@@ -55,3 +55,13 @@ export const createSession = async (req, res) => {
     session,
   });
 };
+export const getSessions = async (req, res) => {
+  const { classId, subject } = req.query;
+
+  const sessions = await Session.find({
+    classId,
+    subject,
+  }).sort({ createdAt: -1 });
+
+  res.json(sessions);
+};

@@ -99,3 +99,75 @@ export const getClassReport = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const getSessionAttendance = async (req, res) => {
+  const { sessionId } = req.params;
+
+  const data = await Attendance.find({ sessionId })
+    .populate("studentId", "name email");
+
+  res.json(data);
+};
+
+export const getClassSubjectReport = async (req, res) => {
+  const { classId, subject } = req.params;
+
+  // get all students of class
+  const classData = await Class.findById(classId).populate(
+    "students",
+    "name email"
+  );
+
+  const students = classData.students;
+
+  // total sessions of this subject
+  const totalSessions = await Session.countDocuments({
+    classId,
+    subject,
+  });
+
+  const result = [];
+
+  for (let student of students) {
+    const attended = await Attendance.countDocuments({
+      studentId: student._id,
+      classId,
+      subject,
+    });
+
+    result.push({
+      name: student.name,
+      email: student.email,
+      attended,
+      total: totalSessions,
+      percentage:
+        totalSessions === 0
+          ? 0
+          : ((attended / totalSessions) * 100).toFixed(2),
+    });
+  }
+
+  res.json(result);
+};
+
+export const getStudentFullReport = async (req, res) => {
+  const { studentId } = req.params;
+
+  const data = await Attendance.aggregate([
+    { $match: { studentId: new mongoose.Types.ObjectId(studentId) } },
+    {
+      $group: {
+        _id: "$subject",
+        attended: { $sum: 1 },
+      },
+    },
+  ]);
+
+  res.json(
+    data.map((d) => ({
+      subject: d._id,
+      percentage: d.attended,
+    }))
+  );
+};
